@@ -50,7 +50,20 @@ for tweet in tweepy.Cursor(api.search,q=SearchParameter).items(N):
     
     print(tweet_txt+ '\n')
     Link= 'Link: ' +''
-    api.update_status('@' +Name+ 'asked if'+url_txt+ ' is fake news: Fake News Bot gives it a score of' )
+    Score=0 #Placeholder value
+    if(0<Score<=0.1):
+        ScoreText='extremely unreliable.'
+    elif(0.1<Score<=0.3):
+        ScoreText='very unreliable.'
+    elif(0.3<Score<=0.5):
+        ScoreText='somewhat unreliable.'
+    elif(0.5<Score<=0.7):
+        ScoreText='somewhat reliable'
+    elif(0.7<Score<=0.9):
+        ScoreText='very reliable'
+    elif(0.9<Score<=1.0):
+        ScoreText='extremely reliable'
+    api.update_status('@' +Name+ 'asked if'+url_txt+ ' is fake news: Fake News Bot gives it a score of' +Score +', '+ScoreText)
     
     #now retweet to get retweet count correct.
     #api.retweet(tweet['id'])
