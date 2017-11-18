@@ -45,12 +45,16 @@ print('Beginning For Loop \n')
 for tweet in tweepy.Cursor(api.search,q=SearchParameter).items(N):
     sleep(1)
     tweet_txt=tweet._json['text']
-    url_text= re.search("(?P<url>https?://[^\s]+)", myString).group("url") #From StackOverflow
-    Name=tweet._json['screen_name']
+    #url_text = re.findall(r'href=[\'"]?([^\'" >]+)', tweet_txt) #From StackOverflow
+    url_text='http://www.bbc.co.uk/news/world-europe-42038801'
+    if(url_text==[]):
+        break
+    print(tweet._json['entities']['user_mentions'][0]['screen_name'])
+    Name=tweet._json['entities']['user_mentions'][0]['screen_name']
     
     print(tweet_txt+ '\n')
     Link= 'Link: ' +''
-    Score=0 #Placeholder value
+    Score=0.9 #Placeholder value
     if(0<Score<=0.1):
         ScoreText='extremely unreliable.'
     elif(0.1<Score<=0.3):
@@ -63,7 +67,7 @@ for tweet in tweepy.Cursor(api.search,q=SearchParameter).items(N):
         ScoreText='very reliable'
     elif(0.9<Score<=1.0):
         ScoreText='extremely reliable'
-    api.update_status('@' +Name+ 'asked if'+url_txt+ ' is fake news: Fake News Bot gives it a score of' +Score +', '+ScoreText)
+    api.update_status('@' +Name+ ' asked if '+url_text+ ' is fake news: Fake News Bot gives it a score of ' +str(Score) +', '+ScoreText+'!')
     
     #now retweet to get retweet count correct.
     #api.retweet(tweet['id'])
