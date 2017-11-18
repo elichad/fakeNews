@@ -9,15 +9,13 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.externals import joblib
 
-def fakeNews(data):
+def fakeNews(text):
     t0 = time.time() 
         
     count = joblib.load('features.pkl')
     clf = joblib.load('fakeNews.pkl')
     
-    test = articles.loc[0]
-    
-    feature = count.transform([test['text'],test['text']])
+    feature = count.transform([text,text])
     
     dfTest = pd.DataFrame(feature.A, columns = count.get_feature_names())
     
@@ -27,10 +25,10 @@ def fakeNews(data):
         
     print time.time() - t0
 
-    return predicted[0][1]
+    return predicted[0][0]
 
 articles = pd.read_csv("https://s3.amazonaws.com/assets.datacamp.com/blog_assets/fake_or_real_news.csv")
 
-data = articles.loc[1]
+data = articles.loc[0:10]
 
-print fakeNews(data)
+print [fakeNews(d) for d in data['text']]
