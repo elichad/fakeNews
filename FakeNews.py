@@ -15,6 +15,9 @@ import json
 from time import sleep
 from secrets import *
 import re
+import soup
+import predict
+
 auth=tweepy.OAuthHandler(C_KEY,C_SECRET)
 auth.set_access_token(A_TOKEN,A_TOKEN_SECRET)
 api=tweepy.API(auth)
@@ -51,9 +54,15 @@ for tweet in tweepy.Cursor(api.search,q=SearchParameter).items():
     timeOfTweet=tweet._json['created_at']
     #print(tweet._json)
     dateTime=time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(timeOfTweet,'%a %b %d %H:%M:%S +0000 %Y'))
-    hourOfTweet=dateTime.split(" ")[1].split(":")[0]
-    hourOfTweet=int(hourOfTweet)
-    hourNow=datetime.datetime.now().hour
+   
+    #minuteOfTweet=dateTime.split(" ")[1].split(":")[1]
+    #minuteOfTweet=int(minuteOfTweet)
+    #minuteNow=datetime.datetime.now().minute
+    #if minuteNow-minuteOfTweet>1:
+    #    continue
+    #hourOfTweet=dateTime.split(" ")[1].split(":")[0]
+    #hourOfTweet=int(hourOfTweet)
+    #hourNow=datetime.datetime.now().hour
     #if hourNow-hourOfTweet>1:
     #   continue
     
@@ -64,33 +73,41 @@ for tweet in tweepy.Cursor(api.search,q=SearchParameter).items():
         try:
             url_text=tweet._json['entities']['urls'][0]['expanded_url']
         except:
-            print ("dis")
-            
             continue
         
     print ("hello there "+url_text)
     #url_text='http://www.bbc.co.uk/news/world-europe-42038801'
-    if(url_text==[] or url_text==""):
+    if(url_text==[] or url_text==""): #just check again, why not
         continue
     Name=tweet._json['entities']['user_mentions'][0]['screen_name']
     
     Link= 'Link: ' +''
-    Score=0.9 #Placeholder value
-    if(0.9<Score<=1.0):
-        ScoreText='Extremely unreliable'
-    elif(0.7<Score<=0.9):
-        ScoreText='Very unreliable'
-    elif(0.5<Score<=0.7):
-        ScoreText='Somewhat unreliable.'
-    elif(0.3<Score<=0.5):
-        ScoreText='Somewhat reliable'
-    elif(0.1<Score<=0.3):
-        ScoreText='Very reliable'
-    elif(0.0<Score<=0.1):
-        ScoreText='Extremely reliable'
-    tweetText="@" +Name+ " asked if "+url_text+ " is fake news: Fake News Bot thinks there's a " +str(int(Score*100)) +"% chance it's fake. "+ScoreText+"!"
+    text=soup.parse(url_text)[1]
+    if text==-2:
+        tweetText="@"+Name+" Sorry, I couldn't find an article in this page."
+    elif text==-1:
+        tweetText="@"+Name+" Sorry, I couldn't process that page."
+    else:
+        if isEnglish(text):
+        #score=predict.fakeNews(text)
+            Score=0.9 #Placeholder value
+            if(0.9<Score<=1.0):
+                ScoreText='Extremely unreliable'
+            elif(0.7<Score<=0.9):
+                ScoreText='Very unreliable'
+            elif(0.5<Score<=0.7):
+                ScoreText='Somewhat unreliable.'
+            elif(0.3<Score<=0.5):
+                ScoreText='Somewhat reliable'
+            elif(0.1<Score<=0.3):
+                ScoreText='Very reliable'
+            elif(0.0<Score<=0.1):
+                ScoreText='Extremely reliable'
+            tweetText="@" +Name+ " asked if "+url_text+ " is fake news: I think there's a " +str(round(Score*100)) +"% chance it's fake. "+ScoreText+"!"
+        else:
+            tweetText="@"+Name+" Sorry, it looks like this content isn't in English, so I can't analyse it."
     print(tweetText)
-    api.update_status(tweetText)
+    #api.update_status(tweetText)
     
     #now retweet to get retweet count correct.
     #api.retweet(tweet['id'])

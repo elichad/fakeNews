@@ -8,11 +8,9 @@ def parse(pageURL):
         article.download()
         article.parse()
         if article.text=='':
-            print ("No article found")
             return -2
         return [article.title,article.text]
     except:
-        print("Unexpected error: ",sys.exc_info()[0])
         return -1
     """
     source=pageURL.split('/')[2]
@@ -28,7 +26,7 @@ def parse(pageURL):
     #save output
     #order: source site, title, first paragraph
    
-
+"""
 pageURL='http://www.bbc.co.uk/news/uk-england-nottinghamshire-42037305'
 #pageURL='http://www.youtube.com'
 content=parse(pageURL)
@@ -42,7 +40,7 @@ elif content==-2:
 else: #success????
     print("hi there friend, here's ur results")
     #do fake news function
-    
+    """
 """
 for i in range(len(urls)):
     url=urls[i]
