@@ -17,6 +17,7 @@ from secrets import *
 import re
 import soup
 import predict
+import filterEnglish
 
 auth=tweepy.OAuthHandler(C_KEY,C_SECRET)
 auth.set_access_token(A_TOKEN,A_TOKEN_SECRET)
@@ -88,9 +89,8 @@ for tweet in tweepy.Cursor(api.search,q=SearchParameter).items():
     elif text==-1:
         tweetText="@"+Name+" Sorry, I couldn't process that page."
     else:
-        if isEnglish(text):
-        #score=predict.fakeNews(text)
-            Score=0.9 #Placeholder value
+        if filterEnglish.isEnglish(text):
+            Score=predict.fakeNews(text)
             if(0.9<Score<=1.0):
                 ScoreText='Extremely unreliable'
             elif(0.7<Score<=0.9):
